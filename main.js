@@ -1,3 +1,4 @@
+// Функции рисования
 function createEl(tag, className) {
     let el = document.createElement(tag);
 
@@ -31,32 +32,45 @@ function createPlayer(player) {
     return $player;
 }
 
-function updatePlayer(player) {
-    const $life = document.querySelector('.player' + player.player + ' .life')
-    const damage = Math.floor(Math.random() * 20);
-    const hp = player.hp - damage;
+function createReloadButton() {
+    const $wrap = createEl('div', 'reloadWrap');
+    const $button = createEl('button', 'button');
 
-    player.hp = hp <= 0 ? 0 : hp;
+    $button.innerText = 'Restart';
 
-    $life.style.width = player.hp + '%';
+    $wrap.appendChild($button);
+    $root.appendChild($wrap);
 
-    checkWinner();
+    $button.addEventListener('click', () => {
+        window.location.reload();
+    });
 }
 
-function checkWinner() {
-    if (player1.hp <= 0) {
-        winnerStage(player2);
-    }
-
-    if (player2.hp <= 0) {
-        winnerStage(player1);
-    }
+// Методы игроков
+function getRandom(num) {
+    return Math.floor(Math.random() * num);
 }
 
-function winnerStage(winner) {
+function changeHP(damage) {
+    const hp = this.hp - damage;
+    this.hp = hp < 0 ? 0 : hp;
+}
+
+function elHP() {
+    return document.querySelector('.player' + this.player + ' .life')
+}
+
+function renderHP() {
+    this.elHP().style.width = this.hp + '%';
+}
+
+function winnerStage(name) {
     const $winner = $arenas.appendChild(createEl('div', 'winTitle'));
-    $winner.innerText = winner.name + ' wins!';
+
+    $winner.innerText = name ? name + ' wins!' : 'draw!';
+            
     $randomBtn.disabled = true;
+    createReloadButton();
 }
 
 /** Persons */
@@ -76,7 +90,10 @@ let player1 = {
     weapon: [],
     attack: () => {
         console.log(this.name + ' Fight...');
-    }
+    },
+    changeHP,
+    elHP,
+    renderHP
 };
 let player2 = {
     player: 2,
@@ -86,7 +103,10 @@ let player2 = {
     weapon: [],
     attack: () => {
         console.log(this.name + ' Fight...');
-    }
+    },
+    changeHP,
+    elHP,
+    renderHP
 };
 
 let $player1 = createPlayer(player1);
@@ -96,6 +116,20 @@ $arenas.appendChild($player1);
 $arenas.appendChild($player2);
 
 $randomBtn.addEventListener('click', () => {
-    updatePlayer(player1);
-    updatePlayer(player2);
+    player1.changeHP(getRandom(20));
+    player2.changeHP(getRandom(20));
+    // test
+    // player1.changeHP(50);
+    // player2.changeHP(50);
+
+    player1.renderHP();
+    player2.renderHP();
+
+    if (player1.hp === 0 && player1.hp < player2.hp) {
+        winnerStage(player2.name);
+    } else if (player2.hp === 0 && player2.hp < player1.hp) {
+        winnerStage(player1.name);
+    } else if (player1.hp === 0 && player2.hp === 0) {
+        winnerStage();
+    }
 });
