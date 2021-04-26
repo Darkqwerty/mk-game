@@ -1,4 +1,3 @@
-import { makeMove } from './player.js';
 import generateLogs from './log.js';
 
 /** Узлы */
@@ -20,7 +19,7 @@ export function createEl(tag, className) {
 }
 
 export function createPlayer(player) {
-    const $player = createEl('div', 'player' + player.player);
+    const $player = createEl('div', 'player' + player.id);
     const $progressbar = createEl('div', 'progressbar');
     const $character = createEl('div', 'character');
     const $life = createEl('div', 'life');
@@ -73,22 +72,3 @@ export function finalStage(winner, loser) {
         generateLogs('draw');
     }
 }
-
-// Listeners
-$randomBtn.addEventListener('click', () => {
-    player1.changeHP(getRandom(20));
-    player2.changeHP(getRandom(20));
-    // test
-    // player1.changeHP(50);
-    // player2.changeHP(50);
-
-    player1.renderHP();
-    player2.renderHP();
-
-    checkWinner();
-});
-
-$form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    makeMove();
-});
